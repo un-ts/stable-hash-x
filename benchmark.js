@@ -4,9 +4,9 @@ import crypto from 'node:crypto'
 
 import { encodeUrl } from 'ab64'
 import { flattie } from 'flattie'
-import hashObject from 'hash-obj'
+import hashObject from 'hash-object'
 import stringify from 'json-stringify-deterministic'
-import bench from 'nanobench'
+import { bench, run, summary } from 'mitata'
 
 import { hash } from 'stable-hash-x'
 
@@ -41,26 +41,21 @@ const payload = {
 }
 
 /**
- * Benchmarking `hash-obj` vs. `stable-hash`
+ * Benchmarking `stable-hash-x` vs. `hash-object` vs.
+ * `json-stringify-deterministic`
  *
  * The goal is to represent a real use-case. Because that:
  *
  * - Ensure the input is flatten
  * - Output is base64 URL safe
  * - Sha512 is used as algorithm
- *
- * @param {object} obj - The object to hash
+ */
+
+/**
+ * @param {unknown} obj
  * @returns {string} The hash
  */
 const getHashOne = obj =>
-  encodeUrl(
-    hashObject(flattie(obj), {
-      encoding: 'base64',
-      algorithm: 'sha512',
-    }),
-  )
-
-const getHashTwo = obj =>
   encodeUrl(
     crypto
       .createHash('sha512')
@@ -68,6 +63,22 @@ const getHashTwo = obj =>
       .digest('base64'),
   )
 
+/**
+ * @param {unknown} obj - The object to hash
+ * @returns {string} The hash
+ */
+const getHashTwo = obj =>
+  encodeUrl(
+    hashObject(flattie(obj), {
+      encoding: 'base64',
+      algorithm: 'sha512',
+    }),
+  )
+
+/**
+ * @param {unknown} obj
+ * @returns {string} The hash
+ */
 const getHashThree = obj =>
   encodeUrl(
     crypto
@@ -76,34 +87,12 @@ const getHashThree = obj =>
       .digest('base64'),
   )
 
-const count = 200_000
+summary(() => {
+  bench('stable-hash-x', () => getHashOne(payload)).baseline()
 
-bench('`hash-obj` 200.000 times', function (b) {
-  b.start()
+  bench('hash-object', () => getHashTwo(payload))
 
-  for (let i = 0; i < count; i++) {
-    getHashOne(payload)
-  }
-
-  b.end()
+  bench('json-stringify-deterministic', () => getHashThree(payload))
 })
 
-bench('`stable-hash` 200.000 times', function (b) {
-  b.start()
-
-  for (let i = 0; i < count; i++) {
-    getHashTwo(payload)
-  }
-
-  b.end()
-})
-
-bench('`json-stringify-deterministic` 200.000 times', function (b) {
-  b.start()
-
-  for (let i = 0; i < count; i++) {
-    getHashThree(payload)
-  }
-
-  b.end()
-})
+await run()
