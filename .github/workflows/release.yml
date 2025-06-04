@@ -40,8 +40,8 @@ jobs:
       - name: Create Release Pull Request or Publish to npm
         uses: changesets/action@v1
         with:
-          commit: 'chore: release lib-boilerplate'
-          title: 'chore: release lib-boilerplate'
+          commit: 'chore: release stable-hash-x'
+          title: 'chore: release stable-hash-x'
           version: yarn run version
           publish: yarn release
         env:
