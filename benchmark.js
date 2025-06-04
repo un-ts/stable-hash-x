@@ -41,7 +41,7 @@ const payload = {
 }
 
 /**
- * Benchmarking `stable-hash-x` vs. `hash-object`
+ * Benchmarking `stable-hash-x` vs. `hash-object` vs. `json-stringify-deterministic`
  *
  * The goal is to represent a real use-case. Because that:
  *
