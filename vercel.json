@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "alias": [
+    "stable-hash.vercel.app",
+    "stable-hash-x.vercel.app"
+  ],
+  "github": {
+    "silent": true
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "trailingSlash": true
+}
