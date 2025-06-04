@@ -1,3 +1,9 @@
-dist/
-node_modules/
-.idea/
+.type-coverage
+.vercel
+.yarn/*
+!.yarn/plugins
+!.yarn/releases
+coverage
+lib
+node_modules
+.vercel
