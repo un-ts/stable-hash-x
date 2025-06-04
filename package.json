@@ -1,6 +1,6 @@
 {
   "name": "stable-hash-x",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "type": "module",
   "description": "Stable JS value hash.",
   "repository": "https://github.com/un-ts/stable-hash-x",
