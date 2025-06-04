@@ -42,6 +42,9 @@ jobs:
         env:
           PARSER_NO_WATCH: true
 
+      - name: Benchmark
+        run: node benchmark
+
       - name: Codecov
         # bad Windows -- https://github.com/codecov/codecov-action/issues/1787
         if: ${{ !github.event.pull_request.head.repo.fork && matrix.os != 'windows-latest' }}
