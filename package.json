@@ -11,6 +11,9 @@
   ],
   "license": "MIT",
   "packageManager": "yarn@4.9.2",
+  "engines": {
+    "node": ">=12.0.0"
+  },
   "main": "./lib/index.cjs",
   "types": "./lib/index.d.cts",
   "module": "./lib/index.js",

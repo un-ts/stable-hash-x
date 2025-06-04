@@ -4,6 +4,7 @@
 !.yarn/plugins
 !.yarn/releases
 coverage
+dist
 lib
 node_modules
 .vercel
