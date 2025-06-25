@@ -379,6 +379,6 @@ describe(`The Func-y Bunch featuring The Referential Squad`, () => {
       f: Symbol('test'),
     })`) as typeof obj1
     expect(obj1).not.toEqual(obj2)
-    expect(hash(obj1)).toEqual(hash(obj2))
+    expect(hash(obj1)).toEqual(hash(obj2, true))
   })
 })

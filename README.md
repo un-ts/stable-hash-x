@@ -13,7 +13,7 @@
 [![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![changesets](https://img.shields.io/badge/maintained%20with-changesets-176de3.svg)](https://github.com/changesets/changesets)
 
-A tiny and fast (540b <sup>[unpkg](https://unpkg.com/stable-hash-x@latest/lib/index.js)</sup>) lib for "stably hashing" a JavaScript value, works with cross-realm objects. Originally created for [SWR](https://github.com/vercel/swr) by [Shu Ding][] at [`stable-hash`](https://github.com/shuding/stable-hash), we forked it because the original one is a bit out of maintenance for a long time.
+A tiny and fast (600B <sup>[unpkg](https://unpkg.com/stable-hash-x@latest/lib/index.js)</sup>) lib for "stably hashing" a JavaScript value, works with cross-realm objects. Originally created for [SWR](https://github.com/vercel/swr) by [Shu Ding][] at [`stable-hash`](https://github.com/shuding/stable-hash), we forked it because the original one is a bit out of maintenance for a long time.
 
 It's similar to `JSON.stringify(value)`, but:
 
@@ -31,6 +31,7 @@ It's similar to `JSON.stringify(value)`, but:
   - [Array](#array)
   - [Object](#object)
   - [`Function`, `Class`, `Set`, `Map`, `Buffer`...](#function-class-set-map-buffer)
+  - [Cross-realm](#cross-realm)
 - [Benchmark](#benchmark)
 - [Notes](#notes)
 - [Sponsors and Backers](#sponsors-and-backers)
@@ -49,6 +50,8 @@ yarn add stable-hash-x
 import { hash } from 'stable-hash-x'
 
 hash(anyJavaScriptValueHere) // returns a string
+
+hash(anyJavaScriptValueHere, true) // if you're running in cross-realm environment, it's disabled by default for performance
 ```
 
 ## Examples
@@ -153,37 +156,39 @@ hash(foo) === hash(foo)
 hash(foo) !== hash(new Set([1]))
 ```
 
+### Cross-realm
+
+```js
+import { runInNewContext } from 'node:vm'
+
+const obj1 = {
+  a: 1,
+  b: new Date('2022-06-25T01:55:27.743Z'),
+  c: /test/,
+  f: Symbol('test'),
+}
+const obj2 = runInNewContext(`({
+  a: 1,
+  b: new Date('2022-06-25T01:55:27.743Z'),
+  c: /test/,
+  f: Symbol('test'),
+})`)
+
+obj1 === obj2 // false
+hash(obj1) === hash(obj2, true) // true
+```
+
 ## Benchmark
 
 ```log
-clk: ~2.91 GHz
-cpu: Apple M1 Max
-runtime: node 22.16.0 (arm64-darwin)
-
-benchmark                   avg (min … max) p75 / p99    (min … top 1%)
-------------------------------------------- -------------------------------
-stable-hash-x                  7.87 µs/iter   7.38 µs   █
-                      (6.67 µs … 749.13 µs)  11.42 µs  ▇█▃
-                    (104.00  b … 859.30 kb)  10.89 kb ▁███▅▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁
-                  4.41 ipc (  1.81% stalls)  98.08% L1 data cache
-         28.04k cycles 123.52k instructions  29.75% retired LD/ST ( 36.75k)
-
-hash-object                   15.07 µs/iter  14.95 µs             █   █
-                      (14.77 µs … 16.93 µs)  15.00 µs ▅  ▅      ▅▅█  ▅█▅  ▅
-                    (659.78  b …   3.26 kb)   1.95 kb █▁▁█▁▁▁▁▁▁███▁▁███▁▁█
-                  4.97 ipc (  1.22% stalls)  99.33% L1 data cache
-         46.36k cycles 230.44k instructions  35.12% retired LD/ST ( 80.94k)
-
-json-stringify-deterministic   8.37 µs/iter   8.41 µs        █
-                        (8.29 µs … 8.50 µs)   8.44 µs     █  █
-                    (  1.65 kb …   1.65 kb)   1.65 kb █▁████▁██▁█▁▁▁█▁█▁███
-                  5.17 ipc (  1.28% stalls)  99.40% L1 data cache
-         25.99k cycles 134.30k instructions  35.51% retired LD/ST ( 47.69k)
-
-summary
-  stable-hash-x
-   1.06x faster than json-stringify-deterministic
-   1.91x faster than hash-object
+┌─────────┬────────────────────────────────┬──────────────────┬───────────────────┬────────────────────────┬────────────────────────┬─────────┐
+│ (index) │ Task name                      │ Latency avg (ns) │ Latency med (ns)  │ Throughput avg (ops/s) │ Throughput med (ops/s) │ Samples │
+├─────────┼────────────────────────────────┼──────────────────┼───────────────────┼────────────────────────┼────────────────────────┼─────────┤
+│ 0       │ 'stable-hash-x'                │ '7877.4 ± 1.57%' │ '7042.0 ± 167.00' │ '138708 ± 0.05%'       │ '142005 ± 3449'        │ 126975  │
+│ 1       │ 'hash-object'                  │ '17632 ± 0.73%'  │ '16708 ± 458.00'  │ '58820 ± 0.07%'        │ '59852 ± 1600'         │ 56716   │
+│ 2       │ 'json-stringify-deterministic' │ '10901 ± 0.83%'  │ '10250 ± 250.00'  │ '95860 ± 0.05%'        │ '97561 ± 2439'         │ 91739   │
+│ 3       │ 'stable-hash'                  │ '8318.5 ± 3.27%' │ '7042.0 ± 208.00' │ '138347 ± 0.06%'       │ '142005 ± 4074'        │ 120214  │
+└─────────┴────────────────────────────────┴──────────────────┴───────────────────┴────────────────────────┴────────────────────────┴─────────┘
 ```
 
 ## Notes

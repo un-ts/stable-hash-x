@@ -31,11 +31,16 @@ const isPlainObject = (val: object) => {
 // This is not a serialization function, and the result is not guaranteed to be
 // parsable.
 // eslint-disable-next-line sonarjs/cognitive-complexity
-export function stableHash(arg: unknown): string {
+export function stableHash(arg: unknown, crossRealm?: boolean): string {
   const type = typeof arg
-  const isDate = isType(arg, 'Date')
+  const constructor = arg?.constructor
+  const isDate = crossRealm ? isType(arg, 'Date') : constructor === Date
 
-  if (Object(arg) === arg && !isDate && !isType(arg, 'RegExp')) {
+  if (
+    Object(arg) === arg &&
+    !isDate &&
+    !(crossRealm ? isType(arg, 'RegExp') : constructor === RegExp)
+  ) {
     const arg_ = arg as object
     // Object/function, not null/date/regexp. Use WeakMap to store the id first.
     // If it's already hashed, directly return the result.
@@ -49,15 +54,20 @@ export function stableHash(arg: unknown): string {
     result = ++counter + '~'
     table.set(arg_, result)
     let index: number | string | undefined
-    if (Array.isArray(arg)) {
+    if (crossRealm ? Array.isArray(arg) : constructor === Array) {
       const arg_ = arg as unknown[]
       // Array.
       result = '@'
       for (index = 0; index < arg_.length; index++) {
-        result += stableHash(arg_[index]) + ','
+        result += stableHash(arg_[index], crossRealm) + ','
       }
       table.set(arg_, result)
-    } else if (isPlainObject(arg_)) {
+    } else if (
+      crossRealm
+        ? isPlainObject(arg_)
+        : // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, sonarjs/different-types-comparison
+          constructor === null || constructor === Object
+    ) {
       // Object, sort keys.
       result = '#'
       // eslint-disable-next-line sonarjs/no-alphabetical-sort
@@ -66,7 +76,7 @@ export function stableHash(arg: unknown): string {
         const index_ = index as keyof typeof arg_
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (arg_[index_] !== undefined) {
-          result += index + ':' + stableHash(arg_[index_]) + ','
+          result += index + ':' + stableHash(arg_[index_], crossRealm) + ','
         }
       }
       table.set(arg_, result)

@@ -6,9 +6,10 @@ import { encodeUrl } from 'ab64'
 import { flattie } from 'flattie'
 import hashObject from 'hash-object'
 import stringify from 'json-stringify-deterministic'
-import { bench, run, summary } from 'mitata'
+import { stableHash } from 'stable-hash'
+import { Bench } from 'tinybench'
 
-import { hash } from 'stable-hash-x'
+import { stableHash as hash } from './lib/index.js'
 
 // this is an example of payload
 const payload = {
@@ -42,7 +43,7 @@ const payload = {
 
 /**
  * Benchmarking `stable-hash-x` vs. `hash-object` vs.
- * `json-stringify-deterministic`
+ * `json-stringify-deterministic` vs. `stable-hash`
  *
  * The goal is to represent a real use-case. Because that:
  *
@@ -87,12 +88,26 @@ const getHashThree = obj =>
       .digest('base64'),
   )
 
-summary(() => {
-  bench('stable-hash-x', () => getHashOne(payload)).baseline()
+/**
+ * @param {unknown} obj
+ * @returns {string} The hash
+ */
+const getHashFour = obj =>
+  encodeUrl(
+    crypto
+      .createHash('sha512')
+      .update(stableHash(flattie(obj)))
+      .digest('base64'),
+  )
 
-  bench('hash-object', () => getHashTwo(payload))
+const bench = new Bench()
 
-  bench('json-stringify-deterministic', () => getHashThree(payload))
-})
+bench
+  .add('stable-hash-x', () => getHashOne(payload))
+  .add('hash-object', () => getHashTwo(payload))
+  .add('json-stringify-deterministic', () => getHashThree(payload))
+  .add('stable-hash', () => getHashFour(payload))
 
-await run()
+await bench.run()
+
+console.table(bench.table())
