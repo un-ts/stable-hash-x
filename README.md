@@ -13,7 +13,7 @@
 [![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![changesets](https://img.shields.io/badge/maintained%20with-changesets-176de3.svg)](https://github.com/changesets/changesets)
 
-A tiny and fast (460b <sup>[unpkg](https://unpkg.com/stable-hash-x@latest/lib/index.js)</sup>) lib for "stably hashing" a JavaScript value. Originally created for [SWR](https://github.com/vercel/swr) by [Shu Ding][] at [`stable-hash`](https://github.com/shuding/stable-hash), we forked it because the original one is a bit out of maintenance for a long time.
+A tiny and fast (540b <sup>[unpkg](https://unpkg.com/stable-hash-x@latest/lib/index.js)</sup>) lib for "stably hashing" a JavaScript value, works with cross-realm objects. Originally created for [SWR](https://github.com/vercel/swr) by [Shu Ding][] at [`stable-hash`](https://github.com/shuding/stable-hash), we forked it because the original one is a bit out of maintenance for a long time.
 
 It's similar to `JSON.stringify(value)`, but:
 
