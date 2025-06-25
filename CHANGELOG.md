@@ -1,5 +1,15 @@
 # Change Log
 
+## 0.2.0
+
+### Minor Changes
+
+- [#11](https://github.com/un-ts/stable-hash-x/pull/11) [`304fe40`](https://github.com/un-ts/stable-hash-x/commit/304fe40bf59dbd714b0e8f55b76ffdc5eef1232b) Thanks [@JounQin](https://github.com/JounQin)! - refactor: add a new `crossRealm` option for performance
+
+### Patch Changes
+
+- [#9](https://github.com/un-ts/stable-hash-x/pull/9) [`8dcd38d`](https://github.com/un-ts/stable-hash-x/commit/8dcd38d034f885c9a3501ecd85b5f579ebcef97a) Thanks [@JounQin](https://github.com/JounQin)! - fix: use `toString` and `prototype` instead of `constructor` for type checking
+
 ## 0.1.1
 
 ### Patch Changes
