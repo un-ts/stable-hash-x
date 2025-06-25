@@ -6,6 +6,22 @@ const table = new WeakMap<object, string>()
 // A counter of the key.
 let counter = 0
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const { toString } = Object.prototype // type-coverage:ignore-line
+
+const isType = (arg: unknown, type: string): boolean =>
+  toString.call(arg) === `[object ${type}]`
+
+// based on https://github.com/sindresorhus/is-plain-obj
+const isPlainObject = (val: object) => {
+  const prototype: unknown = Object.getPrototypeOf(val)
+  return (
+    prototype === null ||
+    prototype === Object.prototype || // type-coverage:ignore-line
+    Object.getPrototypeOf(prototype) === null
+  )
+}
+
 // A stable hash implementation that supports:
 //  - Fast and ensures unique hash properties
 //  - Handles unserializable values
@@ -17,10 +33,9 @@ let counter = 0
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function stableHash(arg: unknown): string {
   const type = typeof arg
-  const constructor = arg?.constructor
-  const isDate = constructor === Date
+  const isDate = isType(arg, 'Date')
 
-  if (Object(arg) === arg && !isDate && constructor != RegExp) {
+  if (Object(arg) === arg && !isDate && !isType(arg, 'RegExp')) {
     const arg_ = arg as object
     // Object/function, not null/date/regexp. Use WeakMap to store the id first.
     // If it's already hashed, directly return the result.
@@ -34,7 +49,7 @@ export function stableHash(arg: unknown): string {
     result = ++counter + '~'
     table.set(arg_, result)
     let index: number | string | undefined
-    if (constructor === Array) {
+    if (Array.isArray(arg)) {
       const arg_ = arg as unknown[]
       // Array.
       result = '@'
@@ -42,7 +57,7 @@ export function stableHash(arg: unknown): string {
         result += stableHash(arg_[index]) + ','
       }
       table.set(arg_, result)
-    } else if (constructor === Object) {
+    } else if (isPlainObject(arg_)) {
       // Object, sort keys.
       result = '#'
       // eslint-disable-next-line sonarjs/no-alphabetical-sort
@@ -58,9 +73,11 @@ export function stableHash(arg: unknown): string {
     }
     return result
   }
+
   if (isDate) {
     return (arg as Date).toJSON()
   }
+
   if (type === 'symbol') {
     return (arg as symbol).toString()
   }

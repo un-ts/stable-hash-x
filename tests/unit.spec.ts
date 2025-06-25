@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-magic-numbers */
 
+import { runInNewContext } from 'node:vm'
+
 import { hash } from 'stable-hash-x'
 
 describe(`Booleans`, () => {
@@ -361,5 +363,22 @@ describe(`The Func-y Bunch featuring The Referential Squad`, () => {
 
     expect(hash(catMap)).toEqual(hash(catMap))
     expect(hash(catMap)).not.toEqual(hash(catMap2))
+  })
+
+  test('across realms', () => {
+    const obj1 = {
+      a: 1,
+      b: new Date('2022-06-25T01:55:27.743Z'),
+      c: /test/,
+      f: Symbol('test'),
+    }
+    const obj2 = runInNewContext(`({
+      a: 1,
+      b: new Date('2022-06-25T01:55:27.743Z'),
+      c: /test/,
+      f: Symbol('test'),
+    })`) as typeof obj1
+    expect(obj1).not.toEqual(obj2)
+    expect(hash(obj1)).toEqual(hash(obj2))
   })
 })
