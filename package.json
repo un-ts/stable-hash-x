@@ -61,7 +61,7 @@
     "@types/node": "^22.15.33",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
-    "@types/web": "^0.0.243",
+    "@types/web": "^0.0.245",
     "@vercel/analytics": "^1.5.0",
     "@vitejs/plugin-react-swc": "^3.10.2",
     "@vitest/coverage-v8": "3.2.4",
