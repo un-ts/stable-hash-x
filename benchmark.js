@@ -2,8 +2,6 @@
 
 import crypto from 'node:crypto'
 
-import { encodeUrl } from 'ab64'
-import { flattie } from 'flattie'
 import hashObject from 'hash-object'
 import stringify from 'json-stringify-deterministic'
 import { stableHash } from 'stable-hash'
@@ -47,58 +45,40 @@ const payload = {
  *
  * The goal is to represent a real use-case. Because that:
  *
- * - Ensure the input is flatten
  * - Output is base64 URL safe
  * - Sha512 is used as algorithm
  */
 
 /**
- * @param {unknown} obj
+ * @param {object} obj
  * @returns {string} The hash
  */
 const getHashOne = obj =>
-  encodeUrl(
-    crypto
-      .createHash('sha512')
-      .update(hash(flattie(obj)))
-      .digest('base64'),
-  )
+  crypto.createHash('sha512').update(hash(obj)).digest('base64url')
 
 /**
- * @param {unknown} obj - The object to hash
+ * @param {object} obj - The object to hash
  * @returns {string} The hash
  */
 const getHashTwo = obj =>
-  encodeUrl(
-    hashObject(flattie(obj), {
-      encoding: 'base64',
-      algorithm: 'sha512',
-    }),
-  )
+  hashObject(obj, {
+    encoding: 'base64url',
+    algorithm: 'sha512',
+  })
 
 /**
- * @param {unknown} obj
+ * @param {object} obj
  * @returns {string} The hash
  */
 const getHashThree = obj =>
-  encodeUrl(
-    crypto
-      .createHash('sha512')
-      .update(stringify(flattie(obj)))
-      .digest('base64'),
-  )
+  crypto.createHash('sha512').update(stringify(obj)).digest('base64url')
 
 /**
- * @param {unknown} obj
+ * @param {object} obj
  * @returns {string} The hash
  */
 const getHashFour = obj =>
-  encodeUrl(
-    crypto
-      .createHash('sha512')
-      .update(stableHash(flattie(obj)))
-      .digest('base64'),
-  )
+  crypto.createHash('sha512').update(stableHash(obj)).digest('base64url')
 
 const bench = new Bench()
 
