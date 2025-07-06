@@ -56,7 +56,6 @@
     "@changesets/cli": "^2.29.5",
     "@commitlint/cli": "^19.8.1",
     "@mdx-js/rollup": "^3.1.0",
-    "@mitata/counters": "^0.0.8",
     "@shikijs/rehype": "^3.7.0",
     "@types/node": "^22.16.0",
     "@types/react": "^19.1.8",

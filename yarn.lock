@@ -2942,13 +2942,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mitata/counters@npm:^0.0.8":
-  version: 0.0.8
-  resolution: "@mitata/counters@npm:0.0.8"
-  checksum: 10c0/e167d8b50b00c84395df277b226820231e4733d425a516adde1300fe0a6c25786e34fe32dc86ca8c0f90a681ff06ab858995c41d7c59ab148c7d3866097a0885
-  languageName: node
-  linkType: hard
-
 "@napi-rs/wasm-runtime@npm:^0.2.10, @napi-rs/wasm-runtime@npm:^0.2.11":
   version: 0.2.11
   resolution: "@napi-rs/wasm-runtime@npm:0.2.11"
@@ -12941,7 +12934,6 @@ __metadata:
     "@changesets/cli": "npm:^2.29.5"
     "@commitlint/cli": "npm:^19.8.1"
     "@mdx-js/rollup": "npm:^3.1.0"
-    "@mitata/counters": "npm:^0.0.8"
     "@shikijs/rehype": "npm:^3.7.0"
     "@types/node": "npm:^22.16.0"
     "@types/react": "npm:^19.1.8"
